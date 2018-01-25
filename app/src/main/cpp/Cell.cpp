@@ -34,17 +34,24 @@ void Cell::notify(Move m,Cell &from){ //Notify surrounding peices
 		D = Direction::S;
 	else if (R == 1 && C == -1)
 		D = Direction::SW;
-	
 	else if (R == 0 && C == -1)
 		D = Direction::W;
-	else
-		return;
+    else
+		D = Direction::C;
+
 	
-	if (m.valid(D) && (from.getDir() == D || from.getDir() == Direction::None)) {
+	if ((from.getDir() == Direction::C || from.getDir() == D) && m.valid(D)) {
 		LastDir = D;
 		this->toggle();
-		this->notifyObservers(m);
+		if (D != Direction::C)
+			this->notifyObservers(m);
+		else {
+			Move h{0};
+			this->notifyObservers(h);
+		}
+
 	}
+	return;
 }
 
 

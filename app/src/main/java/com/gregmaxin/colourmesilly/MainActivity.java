@@ -5,6 +5,8 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,6 +21,7 @@ import android.graphics.Color;
 public class MainActivity extends AppCompatActivity {
     String name = "";
     String layout = "Menu";
+    int p = 1;
     /** -------------------------------------------------------------------------------------------
     Native Method Declarations
      ------------------------------------------------------------------------------------------- **/
@@ -65,13 +68,35 @@ public class MainActivity extends AppCompatActivity {
                     Button button = findViewById(getResources().getIdentifier("button" + x + "" + y, "id", this.getPackageName()));
 
                     if (button != null && button.getId() == view.getId()) {
-                        Log.v("myTag", "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-                        String Display = stringFromJNI(2, x, y, 1);
+                        //Log.v("myTag", "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+                        String Display = stringFromJNI(2, x, y, p);
                         UpdateBoard(Display);
-                        TextView title2 = findViewById(R.id.Score);
-                        title2.setText("1");
+                        ProgressBar prog = findViewById(R.id.Progress);;
+                        int green = Winner(Display, "G");
+                        int red = Winner(Display, "R");
+                        if (green > red)
+                            prog.setProgress(green);
+                        else
+                            prog.setProgress(red);
+                        if (green == 0 || red == 0) {
+                            layout = "Winner";
+                            setContentView(R.layout.winner);
+                        }
+
                     }
                 }
+            }
+            for(int i = 1; i < 4; i++){
+                ImageButton image = findViewById(getResources().getIdentifier("p" + i, "id", this.getPackageName()));
+                if (image != null && image.getId() == view.getId()) {
+                    for(int j = 1; j < 4; j++) {
+                        ImageButton image2 = findViewById(getResources().getIdentifier("p" + j, "id", this.getPackageName()));
+                        image2.setBackgroundColor(Color.WHITE);
+                    }
+                    image.setBackgroundColor(Color.YELLOW);
+                    p = i;
+                }
+
             }
         }
         else if (layout == "Menu") {
@@ -80,10 +105,19 @@ public class MainActivity extends AppCompatActivity {
                     name = editText.getText().toString();
                     setContentView(R.layout.game);
                     layout = "Game";
-                    TextView title = findViewById(R.id.Score);
-                    String init = stringFromJNI(1, 0, 0, 0);
-                    title.setText("0");
+                    String init = stringFromJNI(1, 0, 0, 5);
+                    ImageButton startbutton = findViewById(R.id.p1);
+                    startbutton.setBackgroundColor(Color.YELLOW);
                     UpdateBoard(init);
+                    ProgressBar prog = findViewById(R.id.Progress);
+                    prog.setMax(25);
+                    int green = Winner(init, "G");
+                    int red = Winner(init, "R");
+                    if (green > red)
+                        prog.setProgress(green);
+                    else
+                        prog.setProgress(red);
+
                     break;
                 case R.id.Name:
                     editText.getText().clear();
@@ -91,8 +125,18 @@ public class MainActivity extends AppCompatActivity {
                     Log.v("myTag", "This is my message");
             }
         }
+        else if (layout == "Winner"){
+
+            switch (view.getId()) {
+                case R.id.Reset:
+                    layout = "Menu";
+                    setContentView(R.layout.activity_main);
+
+            }
+        }
     }
     public void UpdateBoard(String s){
+        //Log.v("myTag", "|||||" + s + "|||||");
         GridLayout grid = findViewById(R.id.gridLayout);
         int numx = grid.getRowCount();
         int numy = grid.getColumnCount();
@@ -108,6 +152,23 @@ public class MainActivity extends AppCompatActivity {
                 n++;
             }
         }
+    }
+    public int Winner(String s, String p){
+        char[] arr = s.toCharArray();
+        int n = 0;
+        int g = 0;
+        int r = 0;
+        for(int i = 0; i < arr.length; i++){
+            if (arr[n] == 'G')
+                g++;
+            if (arr[n] == 'R')
+                r++;
+            n++;
+        }
+        if (p == "G")
+            return g;
+        else
+            return r;
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

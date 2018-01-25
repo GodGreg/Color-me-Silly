@@ -4,7 +4,7 @@
 class Cell;
 class Move;
 enum class Colour {GREEN,RED,BLUE,NONE};
-enum class Direction {N,NE,E,SE,S,SW,W,NW,None};
+enum class Direction {N,NE,E,SE,S,SW,W,NW,C,None};
 
 class Observer {
 	public:

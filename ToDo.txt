@@ -1,0 +1,1 @@
+- The app crashes when you attempt to start a new game, because the board is not reset. The visuals are updated but the actual data is not, so when attempting to use an operation it is accessing bad data
